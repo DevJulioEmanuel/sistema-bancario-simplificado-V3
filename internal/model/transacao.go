@@ -6,6 +6,7 @@ import (
 )
 
 type Transacao struct {
+	Tipo      string    `json:"tipo"`
 	Descricao string    `json:"descricao"`
 	Valor     float64   `json:"valor"`
 	Data      time.Time `json:"data"`

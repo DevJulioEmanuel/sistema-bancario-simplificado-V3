@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"banco-api/internal/dto"
+	dtorequest "banco-api/internal/dto/request"
 	"banco-api/internal/model"
 	"banco-api/internal/service"
 	"net/http"
@@ -18,7 +18,7 @@ func NewClienteHandler(service *service.ClienteService) *ClienteHandler {
 }
 
 func (h *ClienteHandler) Cadastrar(c *gin.Context) {
-	var req dto.CadastroRequest
+	var req dtorequest.CadastroRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
@@ -44,7 +44,7 @@ func (h *ClienteHandler) Cadastrar(c *gin.Context) {
 }
 
 func (h *ClienteHandler) Login(c *gin.Context) {
-	var req dto.LoginRequest
+	var req dtorequest.LoginRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})

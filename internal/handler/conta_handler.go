@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"banco-api/internal/dto"
+	dtorequest "banco-api/internal/dto/request"
+	dtoresponse "banco-api/internal/dto/response"
 	"banco-api/internal/service"
 	"net/http"
 	"strconv"
@@ -33,7 +34,7 @@ func (h *ContaHandler) ObterDados(c *gin.Context) {
 		tipo = "poupanca"
 	}
 
-	response := dto.ContaResponse{
+	response := dtoresponse.ContaResponse{
 		Numero:  conta.Numero,
 		Titular: conta.Titular.Nome,
 		Saldo:   conta.Saldo,
@@ -46,65 +47,165 @@ func (h *ContaHandler) ObterDados(c *gin.Context) {
 func (h *ContaHandler) Depositar(c *gin.Context) {
 	numero, _ := strconv.Atoi(c.Param("num"))
 
-	var req dto.ValorRequest
+	var req dtorequest.ValorRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	err := h.service.Depositar(numero, req.Valor)
+	conta, err := h.service.Depositar(numero, req.Valor)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"mensagem": "depósito realizado",
-	})
+	response := dtoresponse.MovimentacaoResponse{
+		Mensagem:         "depósito realizado com sucesso",
+		NumeroConta:      conta.Numero,
+		TipoOperacao:     "deposito",
+		ValorMovimentado: req.Valor,
+		SaldoAtual:       conta.Saldo,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *ContaHandler) Sacar(c *gin.Context) {
 	numero, _ := strconv.Atoi(c.Param("num"))
 
-	var req dto.ValorRequest
+	var req dtorequest.ValorRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	err := h.service.Sacar(numero, req.Valor)
+	conta, err := h.service.Sacar(numero, req.Valor)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"mensagem": "saque realizado",
-	})
+	response := dtoresponse.MovimentacaoResponse{
+		Mensagem:         "saque realizado com sucesso",
+		NumeroConta:      conta.Numero,
+		TipoOperacao:     "saque",
+		ValorMovimentado: req.Valor,
+		SaldoAtual:       conta.Saldo,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *ContaHandler) Transferir(c *gin.Context) {
 	numero, _ := strconv.Atoi(c.Param("num"))
 
-	var req dto.TransferenciaRequest
+	var req dtorequest.TransferenciaRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	err := h.service.Transferir(numero, req.NumDestino, req.Valor)
+	conta, err := h.service.Transferir(numero, req.NumDestino, req.Valor)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"mensagem": "transferência realizada",
-	})
+	response := dtoresponse.TransferenciaResponse{
+		Mensagem:         "transferência realizada com sucesso",
+		ContaOrigem:      conta.Numero,
+		ContaDestino:     req.NumDestino,
+		ValorTransferido: req.Valor,
+		SaldoAtualOrigem: conta.Saldo,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *ContaHandler) Extrato(c *gin.Context) {
+	numero, err := strconv.Atoi(c.Param("num"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": "número inválido",
+		})
+		return
+	}
+
+	conta, err := h.service.ObterExtrato(numero)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
+		})
+		return
+	}
+
+	var transacoes []dtoresponse.TransacaoResponse
+
+	for _, t := range conta.Historico {
+		transacoes = append(transacoes, dtoresponse.TransacaoResponse{
+			Tipo:      t.Tipo,
+			Descricao: t.Descricao,
+			Valor:     t.Valor,
+			Data:      t.Data.Format("02/01/2006 15:04:05"),
+		})
+	}
+
+	response := dtoresponse.ExtratoResponse{
+		NumeroConta: conta.Numero,
+		Titular:     conta.Titular.Nome,
+		SaldoAtual:  conta.Saldo,
+		Transacoes:  transacoes,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *ContaHandler) CalcularRendimento(c *gin.Context) {
+
+	numero, err := strconv.Atoi(c.Param("num"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": "número inválido",
+		})
+		return
+	}
+
+	meses, err := strconv.Atoi(c.Param("meses"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": "quantidade de meses inválida",
+		})
+		return
+	}
+
+	saldoProjetado, rendimento, conta, err :=
+		h.service.CalcularRendimento(numero, meses)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
+		})
+		return
+	}
+
+	response := dtoresponse.RendimentoResponse{
+		NumeroConta:    conta.Numero,
+		SaldoAtual:     conta.Saldo,
+		Meses:          meses,
+		TaxaMensal:     0.005,
+		SaldoProjetado: saldoProjetado,
+		Rendimento:     rendimento,
+	}
+
+	c.JSON(http.StatusOK, response)
 }

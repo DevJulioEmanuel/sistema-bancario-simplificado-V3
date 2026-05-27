@@ -25,6 +25,8 @@ func SetupRoutes(
 		contas.POST("/depositar", contaHandler.Depositar)
 		contas.POST("/sacar", contaHandler.Sacar)
 		contas.POST("/transferir", contaHandler.Transferir)
+		contas.GET("/extrato", contaHandler.Extrato)
+		contas.GET("/rendimento/:meses", contaHandler.CalcularRendimento)
 	}
 
 	r.GET("/health", func(c *gin.Context) {
