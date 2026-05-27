@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"banco-api/internal/handler"
 	"banco-api/internal/repository"
 	"banco-api/internal/routes"
@@ -24,8 +22,6 @@ func main() {
 	r := gin.Default()
 
 	routes.SetupRoutes(r, clienteHandler, contaHandler)
-
-	fmt.Println("Servidor rodando em http://localhost:8080")
 
 	r.Run(":8080")
 }

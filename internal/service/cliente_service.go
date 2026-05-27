@@ -43,7 +43,7 @@ func (s *ClienteService) Cadastrar(
 	s.clienteRepo.Salvar(cliente)
 
 	conta := &model.Conta{
-		Numero:  s.contaRepo.GerarNumeroConta(),
+		Numero:  s.contaRepo.GerarNumeroConta(tipo),
 		Saldo:   0,
 		Titular: cliente,
 		Tipo:    tipo,

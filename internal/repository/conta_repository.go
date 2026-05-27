@@ -6,15 +6,17 @@ import (
 )
 
 type ContaRepository struct {
-	contas        map[int]*model.Conta
-	proximoNumero int
-	mu            sync.RWMutex
+	contas          map[int]*model.Conta
+	proximoCorrente int
+	proximoPoupanca int
+	mu              sync.RWMutex
 }
 
 func NewContaRepository() *ContaRepository {
 	return &ContaRepository{
-		contas:        make(map[int]*model.Conta),
-		proximoNumero: 1001,
+		contas:          make(map[int]*model.Conta),
+		proximoCorrente: 1001,
+		proximoPoupanca: 5001,
 	}
 }
 
@@ -34,12 +36,16 @@ func (r *ContaRepository) BuscarPorNumero(numero int) (*model.Conta, bool) {
 	return conta, ok
 }
 
-func (r *ContaRepository) GerarNumeroConta() int {
+func (r *ContaRepository) GerarNumeroConta(tipo model.TipoConta) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-
-	numero := r.proximoNumero
-	r.proximoNumero++
-
-	return numero
+	if tipo == 1 {
+		num := r.proximoCorrente
+		r.proximoCorrente++
+		return num
+	} else {
+		num := r.proximoPoupanca
+		r.proximoPoupanca++
+		return num
+	}
 }

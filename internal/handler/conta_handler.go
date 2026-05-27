@@ -17,6 +17,32 @@ func NewContaHandler(service *service.ContaService) *ContaHandler {
 	return &ContaHandler{service: service}
 }
 
+func (h *ContaHandler) ObterDados(c *gin.Context) {
+	numero, _ := strconv.Atoi(c.Param("num"))
+
+	conta, err := h.service.BuscarConta(numero)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
+		return
+	}
+
+	tipo := "corrente"
+
+	if conta.Tipo == 2 {
+		tipo = "poupanca"
+	}
+
+	response := dto.ContaResponse{
+		Numero:  conta.Numero,
+		Titular: conta.Titular.Nome,
+		Saldo:   conta.Saldo,
+		Tipo:    tipo,
+		Limite:  1200,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
 func (h *ContaHandler) Depositar(c *gin.Context) {
 	numero, _ := strconv.Atoi(c.Param("num"))
 

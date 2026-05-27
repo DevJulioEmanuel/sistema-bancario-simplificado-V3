@@ -21,6 +21,7 @@ func SetupRoutes(
 
 	contas := r.Group("/contas/:num")
 	{
+		contas.GET("/", contaHandler.ObterDados)
 		contas.POST("/depositar", contaHandler.Depositar)
 		contas.POST("/sacar", contaHandler.Sacar)
 		contas.POST("/transferir", contaHandler.Transferir)
