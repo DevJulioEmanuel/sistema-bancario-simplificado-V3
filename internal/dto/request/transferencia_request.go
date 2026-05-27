@@ -1,4 +1,4 @@
-package dto
+package request
 
 type TransferenciaRequest struct {
 	NumDestino int     `json:"num_destino" binding:"required"`

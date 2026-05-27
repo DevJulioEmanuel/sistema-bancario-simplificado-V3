@@ -44,6 +44,50 @@ func (h *ContaHandler) ObterDados(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *ContaHandler) Pagar(c *gin.Context) {
+
+	numero, err := strconv.Atoi(c.Param("num"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": "número inválido",
+		})
+		return
+	}
+
+	var req dtorequest.PagamentoRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
+		})
+		return
+	}
+
+	conta, err := h.service.Pagar(
+		numero,
+		req.Descricao,
+		req.Valor,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
+		})
+		return
+	}
+
+	response := dtoresponse.PagamentoResponse{
+		Mensagem:    "pagamento realizado com sucesso",
+		NumeroConta: conta.Numero,
+		Descricao:   req.Descricao,
+		ValorPago:   req.Valor,
+		SaldoAtual:  conta.Saldo,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
 func (h *ContaHandler) Depositar(c *gin.Context) {
 	numero, _ := strconv.Atoi(c.Param("num"))
 

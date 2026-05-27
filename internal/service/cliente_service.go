@@ -28,19 +28,29 @@ func (s *ClienteService) Cadastrar(
 	tipo model.TipoConta,
 ) (*model.Conta, error) {
 
-	_, existe := s.clienteRepo.BuscarPorCPF(cpf)
+	cliente, existe := s.clienteRepo.BuscarPorCPF(cpf)
 
-	if existe {
-		return nil, errors.New("CPF já cadastrado")
+	if !existe {
+
+		cliente = &model.Cliente{
+			Nome:  nome,
+			CPF:   cpf,
+			Senha: senha,
+		}
+
+		s.clienteRepo.Salvar(cliente)
 	}
 
-	cliente := &model.Cliente{
-		Nome:  nome,
-		CPF:   cpf,
-		Senha: senha,
-	}
+	_, existeConta := s.contaRepo.BuscarPorClienteETipo(
+		cpf,
+		tipo,
+	)
 
-	s.clienteRepo.Salvar(cliente)
+	if existeConta {
+		return nil, errors.New(
+			"cliente já possui esse tipo de conta",
+		)
+	}
 
 	conta := &model.Conta{
 		Numero:  s.contaRepo.GerarNumeroConta(tipo),

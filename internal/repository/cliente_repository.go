@@ -31,3 +31,23 @@ func (r *ClienteRepository) BuscarPorCPF(cpf string) (*model.Cliente, bool) {
 
 	return cliente, ok
 }
+
+func (r *ContaRepository) BuscarPorClienteETipo(
+	cpf string,
+	tipo model.TipoConta,
+) (*model.Conta, bool) {
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	for _, conta := range r.contas {
+
+		if conta.Titular.CPF == cpf &&
+			conta.Tipo == tipo {
+
+			return conta, true
+		}
+	}
+
+	return nil, false
+}

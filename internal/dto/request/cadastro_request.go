@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CadastroRequest struct {
 	Nome  string `json:"nome" binding:"required"`

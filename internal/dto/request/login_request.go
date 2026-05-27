@@ -1,4 +1,4 @@
-package dto
+package request
 
 type LoginRequest struct {
 	CPF   string `json:"cpf" binding:"required"`

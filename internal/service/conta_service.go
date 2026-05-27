@@ -28,6 +28,49 @@ func (s *ContaService) BuscarConta(numero int) (*model.Conta, error) {
 	return conta, nil
 }
 
+func (s *ContaService) Pagar(
+	numero int,
+	descricao string,
+	valor float64,
+) (*model.Conta, error) {
+
+	conta, err := s.BuscarConta(numero)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if conta.Tipo != model.TipoCorrente {
+		return nil, errors.New(
+			"apenas contas correntes podem realizar pagamentos",
+		)
+	}
+
+	if valor <= 0 {
+		return nil, errors.New("valor inválido")
+	}
+
+	if conta.Saldo < valor {
+		return nil, errors.New("saldo insuficiente")
+	}
+
+	conta.Mu.Lock()
+	defer conta.Mu.Unlock()
+
+	conta.Saldo -= valor
+
+	transacao := model.Transacao{
+		Tipo:      "pagamento",
+		Descricao: descricao,
+		Valor:     -valor,
+		Data:      time.Now(),
+	}
+
+	conta.Historico = append(conta.Historico, transacao)
+
+	return conta, nil
+}
+
 func (s *ContaService) Depositar(numero int, valor float64) (*model.Conta, error) {
 
 	conta, err := s.BuscarConta(numero)

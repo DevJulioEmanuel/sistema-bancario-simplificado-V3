@@ -1,6 +1,6 @@
-package dto
+package request
 
 type PagamentoRequest struct {
-	Valor     float64 `json:"valor" binding:"required,gt=0"`
-	Descricao string  `json:"descricao" binding:"required"`
+	Descricao string  `json:"descricao"`
+	Valor     float64 `json:"valor"`
 }
