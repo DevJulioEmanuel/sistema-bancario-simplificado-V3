@@ -28,10 +28,10 @@ func (h *ContaHandler) ObterDados(c *gin.Context) {
 		return
 	}
 
-	tipo := "corrente"
+	tipo := 1
 
 	if conta.Tipo == 2 {
-		tipo = "poupanca"
+		tipo = 2
 	}
 
 	response := dtoresponse.ContaResponse{

@@ -10,8 +10,15 @@ import (
 )
 
 func main() {
-	clienteRepo := repository.NewClienteRepository()
-	contaRepo := repository.NewContaRepository()
+	bancoRepo := repository.NewBancoRepository()
+
+	clienteRepo := repository.NewClienteRepository(
+		bancoRepo,
+	)
+
+	contaRepo := repository.NewContaRepository(
+		bancoRepo,
+	)
 
 	clienteService := service.NewClienteService(clienteRepo, contaRepo)
 	contaService := service.NewContaService(contaRepo)

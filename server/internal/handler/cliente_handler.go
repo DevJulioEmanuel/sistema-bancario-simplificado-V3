@@ -51,7 +51,7 @@ func (h *ClienteHandler) Login(c *gin.Context) {
 		return
 	}
 
-	cliente, err := h.service.Login(req.CPF, req.Senha)
+	conta, err := h.service.Login(req.CPF, req.Senha, req.TipoConta)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"erro": err.Error()})
@@ -60,6 +60,6 @@ func (h *ClienteHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"mensagem": "login realizado",
-		"nome":     cliente.Nome,
+		"nome":     conta.Titular.Nome,
 	})
 }

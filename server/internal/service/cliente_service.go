@@ -64,11 +64,15 @@ func (s *ClienteService) Cadastrar(
 	return conta, nil
 }
 
-func (s *ClienteService) Login(cpf, senha string) (*model.Cliente, error) {
+func (s *ClienteService) Login(
+	cpf,
+	senha string,
+	tipo model.TipoConta,
+) (*model.Conta, error) {
 
-	cliente, existe := s.clienteRepo.BuscarPorCPF(cpf)
+	cliente, existeCPF := s.clienteRepo.BuscarPorCPF(cpf)
 
-	if !existe {
+	if !existeCPF {
 		return nil, errors.New("cliente não encontrado")
 	}
 
@@ -76,5 +80,11 @@ func (s *ClienteService) Login(cpf, senha string) (*model.Cliente, error) {
 		return nil, errors.New("senha incorreta")
 	}
 
-	return cliente, nil
+	conta, existeConta := s.contaRepo.BuscarPorClienteETipo(cpf, tipo)
+
+	if !existeConta {
+		return nil, errors.New("cliente não possui esse tipo de conta")
+	}
+
+	return conta, nil
 }

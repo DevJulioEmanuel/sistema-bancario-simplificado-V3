@@ -6,15 +6,17 @@ import (
 )
 
 type ContaRepository struct {
-	contas          map[int]*model.Conta
+	bancoRepo       *BancoRepository
 	proximoCorrente int
 	proximoPoupanca int
 	mu              sync.RWMutex
 }
 
-func NewContaRepository() *ContaRepository {
+func NewContaRepository(
+	bancoRepo *BancoRepository,
+) *ContaRepository {
 	return &ContaRepository{
-		contas:          make(map[int]*model.Conta),
+		bancoRepo:       bancoRepo,
 		proximoCorrente: 1001,
 		proximoPoupanca: 5001,
 	}
@@ -24,16 +26,21 @@ func (r *ContaRepository) Salvar(conta *model.Conta) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.contas[conta.Numero] = conta
+	r.bancoRepo.GetBanco().Contas =
+		append(r.bancoRepo.GetBanco().Contas, conta)
 }
 
 func (r *ContaRepository) BuscarPorNumero(numero int) (*model.Conta, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	conta, ok := r.contas[numero]
+	for _, conta := range r.bancoRepo.GetBanco().Contas {
+		if conta.Numero == numero {
+			return conta, true
+		}
+	}
 
-	return conta, ok
+	return nil, false
 }
 
 func (r *ContaRepository) GerarNumeroConta(tipo model.TipoConta) int {
@@ -48,4 +55,23 @@ func (r *ContaRepository) GerarNumeroConta(tipo model.TipoConta) int {
 		r.proximoPoupanca++
 		return num
 	}
+}
+
+func (r *ContaRepository) BuscarPorClienteETipo(
+	cpf string,
+	tipo model.TipoConta,
+) (*model.Conta, bool) {
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	for _, conta := range r.bancoRepo.GetBanco().Contas {
+		if conta.Titular.CPF == cpf &&
+			conta.Tipo == tipo {
+
+			return conta, true
+		}
+	}
+
+	return nil, false
 }

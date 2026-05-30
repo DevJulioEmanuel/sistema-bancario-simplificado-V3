@@ -6,13 +6,15 @@ import (
 )
 
 type ClienteRepository struct {
-	clientes map[string]*model.Cliente
-	mu       sync.RWMutex
+	bancoRepo *BancoRepository
+	mu        sync.RWMutex
 }
 
-func NewClienteRepository() *ClienteRepository {
+func NewClienteRepository(
+	bancoRepo *BancoRepository,
+) *ClienteRepository {
 	return &ClienteRepository{
-		clientes: make(map[string]*model.Cliente),
+		bancoRepo: bancoRepo,
 	}
 }
 
@@ -20,32 +22,18 @@ func (r *ClienteRepository) Salvar(cliente *model.Cliente) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.clientes[cliente.CPF] = cliente
+	r.bancoRepo.GetBanco().Clientes =
+		append(r.bancoRepo.GetBanco().Clientes, cliente)
 }
 
 func (r *ClienteRepository) BuscarPorCPF(cpf string) (*model.Cliente, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	cliente, ok := r.clientes[cpf]
+	for _, cliente := range r.bancoRepo.GetBanco().Clientes {
 
-	return cliente, ok
-}
-
-func (r *ContaRepository) BuscarPorClienteETipo(
-	cpf string,
-	tipo model.TipoConta,
-) (*model.Conta, bool) {
-
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	for _, conta := range r.contas {
-
-		if conta.Titular.CPF == cpf &&
-			conta.Tipo == tipo {
-
-			return conta, true
+		if cliente.CPF == cpf {
+			return cliente, true
 		}
 	}
 
