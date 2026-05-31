@@ -4,8 +4,8 @@ public class Banner {
 
     public static final int LARGURA = 60;
 
-    public static final String NOME = "Banco RMI";
-    public static final String VERSAO = "v2.0 Java · Protobuf · RMI";
+    public static final String NOME = "BancoAPI";
+    public static final String VERSAO = "v3.0 GO · Json · API";
 
     public static final String SEPARADOR = "─".repeat(LARGURA);
     public static final String SEPARADOR_DUPLO = "· ".repeat(LARGURA / 2);
