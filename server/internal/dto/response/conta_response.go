@@ -6,4 +6,5 @@ type ContaResponse struct {
 	Saldo   float64 `json:"saldo"`
 	Tipo    int     `json:"tipo"`
 	Limite  float64 `json:"limite"`
+	Taxa    float64 `json:"taxa"`
 }

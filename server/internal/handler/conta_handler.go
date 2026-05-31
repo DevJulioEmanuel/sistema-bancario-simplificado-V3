@@ -40,6 +40,7 @@ func (h *ContaHandler) ObterDados(c *gin.Context) {
 		Saldo:   conta.Saldo,
 		Tipo:    tipo,
 		Limite:  1200,
+		Taxa: 0.005,
 	}
 
 	c.JSON(http.StatusOK, response)

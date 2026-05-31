@@ -39,7 +39,7 @@ func (h *ClienteHandler) Cadastrar(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"mensagem":  "cliente cadastrado com sucesso",
-		"num_conta": conta.Numero,
+		"numConta": conta.Numero,
 	})
 }
 
@@ -61,5 +61,6 @@ func (h *ClienteHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"mensagem": "login realizado",
 		"nome":     conta.Titular.Nome,
+		"numero": conta.Numero,
 	})
 }

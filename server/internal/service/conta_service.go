@@ -61,7 +61,7 @@ func (s *ContaService) Pagar(
 
 	transacao := model.Transacao{
 		Tipo:      "pagamento",
-		Descricao: descricao,
+		Descricao: fmt.Sprintf("Pagamento: %s | Valor", descricao),
 		Valor:     -valor,
 		Data:      time.Now(),
 	}
@@ -91,7 +91,7 @@ func (s *ContaService) Depositar(numero int, valor float64) (*model.Conta, error
 	conta.Historico = append(conta.Historico, model.Transacao{
 		Tipo:      "deposito",
 		Descricao: "Depósito",
-		Valor:     valor,
+		Valor:     +valor,
 		Data:      time.Now(),
 	})
 
@@ -178,7 +178,7 @@ func (s *ContaService) Transferir(origemNum, destinoNum int, valor float64) (*mo
 	destino.Historico = append(destino.Historico, model.Transacao{
 		Tipo:      "transferencia",
 		Descricao: fmt.Sprintf("Transferência recebida da conta %d", origem.Numero),
-		Valor:     valor,
+		Valor:     +valor,
 		Data:      time.Now(),
 	})
 
