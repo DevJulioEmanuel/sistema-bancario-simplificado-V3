@@ -1,0 +1,42 @@
+# === JAVA / SPRING BOOT ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!maven-wrapper.jar
+build/
+.gradle/
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.rar
+
+# === GO (GOLANG) ===
+# Binários compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+out/
+# Arquivo de teste de cobertura
+*.out
+
+# === IDEs & FERRAMENTAS ===
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# VS Code
+.vscode/
+.history/
+*.code-workspace
+
+# === CONFIGURAÇÕES LOCAIS ===
+# Logs locais e arquivos de propriedades/env que guardam senhas
+*.log
+.env
+application-local.yaml
