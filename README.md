@@ -3,6 +3,7 @@
 > **Disciplina:** Sistemas Distribuídos
 > **Autor:** Arthur Lelis Uchoa e Julio Emanuel Pereira da Silva
 > **Arquitetura:** Microserviços / Cliente-Servidor (REST API Poliglota)
+
 > **Link do vídeo:** https://youtu.be/dEfyc4pequA?si=qfTYXjjeT2UMt9UV
 ---
 
